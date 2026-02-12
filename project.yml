@@ -1,4 +1,4 @@
-name: EtyNote
+﻿name: EtyNote
 options:
   createIntermediateGroups: true
 targets:
@@ -15,4 +15,5 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.backwell88.EtyNote
         GENERATE_INFOPLIST_FILE: YES
         SWIFT_VERSION: 5.9
-        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_ALLOWED: YES
+

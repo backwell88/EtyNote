@@ -8,6 +8,7 @@ enum KeychainServiceError: Error {
 enum KeychainService {
     private static let service = "EtyNote"
     private static let account = "apiKey"
+    private static let simulatorFallbackKey = "settings.apiKey.simulatorFallback"
 
     static func saveAPIKey(_ key: String) throws {
         let data = Data(key.utf8)
@@ -21,6 +22,14 @@ enum KeychainService {
         ]
 
         let status = SecItemAdd(query as CFDictionary, nil)
+
+        #if targetEnvironment(simulator)
+        if status == errSecMissingEntitlement {
+            UserDefaults.standard.set(key, forKey: simulatorFallbackKey)
+            return
+        }
+        #endif
+
         guard status == errSecSuccess else {
             throw KeychainServiceError.unhandledStatus(status)
         }
@@ -39,6 +48,13 @@ enum KeychainService {
         let status = SecItemCopyMatching(query as CFDictionary, &item)
 
         if status == errSecItemNotFound { return "" }
+
+        #if targetEnvironment(simulator)
+        if status == errSecMissingEntitlement {
+            return UserDefaults.standard.string(forKey: simulatorFallbackKey) ?? ""
+        }
+        #endif
+
         guard status == errSecSuccess else {
             throw KeychainServiceError.unhandledStatus(status)
         }
@@ -55,6 +71,14 @@ enum KeychainService {
         ]
 
         let status = SecItemDelete(query as CFDictionary)
+
+        #if targetEnvironment(simulator)
+        if status == errSecMissingEntitlement {
+            UserDefaults.standard.removeObject(forKey: simulatorFallbackKey)
+            return
+        }
+        #endif
+
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainServiceError.unhandledStatus(status)
         }
