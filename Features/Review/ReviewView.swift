@@ -12,7 +12,9 @@ struct ReviewView: View {
                 .buttonStyle(.borderedProminent)
 
                 List(vm.titles, id: \.self) { title in
-                    Text(title)
+                    NavigationLink(destination: DetailView(title: title)) {
+                        Text(title)
+                    }
                 }
 
                 Text(vm.statusMessage)
