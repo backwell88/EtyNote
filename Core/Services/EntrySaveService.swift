@@ -9,9 +9,10 @@ enum EntrySaveService {
 
     static func generateAndSave(
         word: String,
-        config: AIServiceConfig,
-        in documentsURL: URL
+        in documentsURL: URL,
+        defaults: UserDefaults = .standard
     ) async throws -> Bool {
+        let config = try AppConfigService.loadAIConfig(defaults: defaults)
         let entry = try await AIPipelineService.generateEntry(for: word, config: config)
         return try save(entry, in: documentsURL)
     }
