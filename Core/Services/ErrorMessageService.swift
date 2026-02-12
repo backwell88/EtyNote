@@ -18,6 +18,13 @@ enum ErrorMessageService {
             }
         }
 
+        if let e = error as? NetworkServiceError {
+            switch e {
+            case .noNetwork:
+                return "当前无网络连接，请联网后再生成。"
+            }
+        }
+
         if let e = error as? AIServiceError {
             switch e {
             case .emptyAPIKey:
