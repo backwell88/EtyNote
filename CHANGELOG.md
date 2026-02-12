@@ -28,3 +28,10 @@
 - Added clearer user-facing messages for schema/format failures
 - Added network reachability check and blocked generation when offline
 - Added no-network user message mapping
+
+## v0.5.0-ui-foundation - 2026-02-12
+- Added SwiftUI app entry and root tab structure
+- Added Home/Search/Review/Settings screens wired to ViewModels
+- Added DetailView for entry markdown content
+- Added markdown import/export (replace) flow in settings
+- Completed UI task checklist for v0.5
