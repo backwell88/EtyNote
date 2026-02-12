@@ -4,7 +4,7 @@ struct SearchView: View {
     @StateObject private var vm = SearchViewModel()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 12) {
                 HStack {
                     TextField("Search title", text: $vm.keyword)
@@ -14,6 +14,7 @@ struct SearchView: View {
                         vm.search()
                     }
                 }
+                .padding(.horizontal)
 
                 List {
                     ForEach(vm.filteredTitles, id: \.self) { title in
@@ -29,13 +30,15 @@ struct SearchView: View {
                         }
                     }
                 }
+                .listStyle(.plain)
 
                 Text(vm.statusMessage)
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
             }
-            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Search")
             .onAppear { vm.loadTitles() }
         }

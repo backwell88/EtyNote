@@ -4,7 +4,7 @@ struct HomeView: View {
     @StateObject private var vm = HomeViewModel()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 16) {
                 TextField("Enter a word or Chinese term", text: $vm.inputWord)
                     .textFieldStyle(.roundedBorder)
@@ -29,7 +29,8 @@ struct HomeView: View {
 
                 Spacer()
             }
-            .padding()
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("EtyNote")
         }
     }
