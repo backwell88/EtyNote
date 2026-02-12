@@ -58,6 +58,9 @@ enum ErrorMessageService {
             case .invalidHTTPResponse:
                 return "网络响应异常，请稍后重试。"
             case .httpStatus(let code):
+                if code == 404 {
+                    return "请求地址不存在（HTTP 404）。DeepSeek 推荐填写 https://api.deepseek.com 或 https://api.deepseek.com/chat/completions。"
+                }
                 return "请求失败（HTTP \(code)），请检查网络或密钥权限。"
             case .emptyAssistantContent:
                 return "AI 未返回有效内容，请重试。"

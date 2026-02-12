@@ -29,14 +29,15 @@ enum AIService {
     ) throws -> URLRequest {
         let key = config.apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !key.isEmpty else { throw AIServiceError.emptyAPIKey }
-        guard let url = URL(string: config.baseURL) else { throw AIServiceError.invalidBaseURL }
+
+        let url = try resolveCompletionsURL(from: config.baseURL)
 
         let userPrompt = useRetryPrompt
             ? PromptBuilder.retryUserPrompt(for: word)
             : PromptBuilder.userPrompt(for: word)
 
         let body: [String: Any] = [
-            "model": "gpt-4o-mini",
+            "model": resolveModel(from: url),
             "temperature": 0.2,
             "messages": [
                 ["role": "system", "content": PromptBuilder.systemPrompt],
@@ -80,6 +81,42 @@ enum AIService {
         }
 
         return content
+    }
+
+    private static func resolveModel(from url: URL) -> String {
+        let host = (url.host ?? "").lowercased()
+        if host.contains("deepseek.com") {
+            return "deepseek-chat"
+        }
+        return "gpt-4o-mini"
+    }
+
+    private static func resolveCompletionsURL(from base: String) throws -> URL {
+        let trimmed = base.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard var components = URLComponents(string: trimmed), components.scheme != nil, components.host != nil else {
+            throw AIServiceError.invalidBaseURL
+        }
+
+        let normalizedPath = components.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+
+        if normalizedPath.isEmpty {
+            // e.g. https://api.deepseek.com or https://api.openai.com
+            components.path = components.host?.contains("openai.com") == true
+                ? "/v1/chat/completions"
+                : "/chat/completions"
+        } else if normalizedPath == "v1" {
+            // e.g. https://api.deepseek.com/v1
+            components.path = "/v1/chat/completions"
+        } else if normalizedPath == "chat/completions" || normalizedPath == "v1/chat/completions" {
+            // already full endpoint, keep as-is
+        } else {
+            // Unknown path; use it directly, but still valid URL.
+        }
+
+        guard let url = components.url else {
+            throw AIServiceError.invalidBaseURL
+        }
+        return url
     }
 
     private struct ChatCompletionsResponse: Decodable {
