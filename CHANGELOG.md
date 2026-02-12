@@ -21,3 +21,10 @@
 - Added AppConfigService + KeychainService for settings and API key storage
 - Added DictionaryService for Chinese input resolving
 - Added ErrorMessageService and display-friendly usage helper
+
+## v0.4.0-validation-and-reliability - 2026-02-12
+- Enforced strict JSON schema validation (no extra fields, required keys check)
+- Switched AI pipeline to strict decoding and validation flow
+- Added clearer user-facing messages for schema/format failures
+- Added network reachability check and blocked generation when offline
+- Added no-network user message mapping
