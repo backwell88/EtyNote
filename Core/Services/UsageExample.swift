@@ -16,4 +16,15 @@ enum UsageExample {
             return .failure(error)
         }
     }
+
+    static func runGenerateAndSaveMessage(word: String) async -> String {
+        let result = await runGenerateAndSave(word: word)
+
+        switch result {
+        case .success(let ok):
+            return ok ? "保存成功。" : "保存失败：数据校验未通过。"
+        case .failure(let error):
+            return ErrorMessageService.message(for: error)
+        }
+    }
 }
