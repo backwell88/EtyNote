@@ -23,4 +23,12 @@ enum ReviewSettingsService {
         let raw = defaults.integer(forKey: dailyCountKey)
         return raw <= 0 ? 10 : raw
     }
+
+    static func updateReviewEnabled(
+        _ enabled: Bool,
+        defaults: UserDefaults = .standard
+    ) async throws {
+        setReviewEnabled(enabled, defaults: defaults)
+        try await ReviewNotificationService.scheduleDailyReviewNotification(enabled: enabled)
+    }
 }
