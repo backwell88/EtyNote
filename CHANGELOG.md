@@ -35,3 +35,9 @@
 - Added DetailView for entry markdown content
 - Added markdown import/export (replace) flow in settings
 - Completed UI task checklist for v0.5
+
+## v0.6.0-simulator-build-pass - 2026-02-12
+- Added Xcode project bootstrap (EtyNote.xcodeproj)
+- Added xcodegen config (project.yml)
+- Fixed review notification compile compatibility
+- Passed iOS Simulator build on macOS
