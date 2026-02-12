@@ -41,3 +41,10 @@
 - Added xcodegen config (project.yml)
 - Fixed review notification compile compatibility
 - Passed iOS Simulator build on macOS
+
+## v0.7.0-simulator-e2e-pass - 2026-02-12
+- Passed full simulator E2E flow: settings save, generate/save, search, detail, delete, review reload
+- Added DeepSeek compatibility (endpoint/model auto resolution)
+- Improved runtime diagnostics for generation failures (show final concrete error)
+- Added simulator fallback for Keychain -34018 and enabled code signing in project config
+- Review page now supports tapping a word to open markdown detail
