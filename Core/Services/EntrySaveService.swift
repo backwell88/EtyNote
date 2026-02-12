@@ -13,7 +13,8 @@ enum EntrySaveService {
         defaults: UserDefaults = .standard
     ) async throws -> Bool {
         let config = try AppConfigService.loadAIConfig(defaults: defaults)
-        let entry = try await AIPipelineService.generateEntry(for: word, config: config)
+        let resolvedWord = try DictionaryService.resolveEnglishWord(from: word)
+        let entry = try await AIPipelineService.generateEntry(for: resolvedWord, config: config)
         return try save(entry, in: documentsURL)
     }
 }
