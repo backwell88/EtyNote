@@ -10,7 +10,7 @@ enum AIPipelineService {
     static func generateEntry(for word: String, config: AIServiceConfig) async throws -> WordEntry {
         for attempt in 1...3 {
             do {
-                // 第3次尝试 = 第二次重试，按你的需求使用更严格提示词
+                // 第3次尝试 = 第二次重试，使用更严格提示词
                 let useRetryPrompt = (attempt == 3)
                 let raw = try await AIService.generateRawJSON(
                     for: word,
@@ -23,7 +23,7 @@ enum AIPipelineService {
                     throw AIPipelineError.invalidAssistantJSON
                 }
 
-                let entry = try JSONDecoder().decode(WordEntry.self, from: data)
+                let entry = try JSONValidator.decodeStrict(from: data)
                 guard JSONValidator.validate(entry) else {
                     throw AIPipelineError.schemaValidationFailed
                 }
