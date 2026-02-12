@@ -21,17 +21,15 @@ enum AppConfigService {
             : value
     }
 
-    static func loadAIConfig(
-        apiKey: String,
-        defaults: UserDefaults = .standard
-    ) throws -> AIServiceConfig {
-        let cleanedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !cleanedKey.isEmpty else { throw AppConfigServiceError.emptyAPIKey }
+    static func loadAIConfig(defaults: UserDefaults = .standard) throws -> AIServiceConfig {
+        let apiKey = try KeychainService.loadAPIKey()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !apiKey.isEmpty else { throw AppConfigServiceError.emptyAPIKey }
 
         let baseURL = loadBaseURL(defaults: defaults)
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !baseURL.isEmpty else { throw AppConfigServiceError.emptyBaseURL }
 
-        return AIServiceConfig(baseURL: baseURL, apiKey: cleanedKey)
+        return AIServiceConfig(baseURL: baseURL, apiKey: apiKey)
     }
 }
