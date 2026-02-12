@@ -20,6 +20,16 @@ struct SettingsView: View {
                         .keyboardType(.numberPad)
                 }
 
+                Section("Markdown Transfer") {
+                    HStack {
+                        Button("Export") { vm.exportMarkdown() }
+                        Button("Import Replace") { vm.importMarkdownReplace() }
+                    }
+
+                    TextEditor(text: $vm.markdownTransferText)
+                        .frame(minHeight: 180)
+                }
+
                 Section {
                     Button("Save Settings") {
                         Task { await vm.save() }

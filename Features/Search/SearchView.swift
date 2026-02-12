@@ -17,13 +17,14 @@ struct SearchView: View {
 
                 List {
                     ForEach(vm.filteredTitles, id: \.self) { title in
-                        HStack {
+                        NavigationLink(destination: DetailView(title: title)) {
                             Text(title)
-                            Spacer()
+                        }
+                        .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
                                 vm.delete(word: title)
                             } label: {
-                                Image(systemName: "trash")
+                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
