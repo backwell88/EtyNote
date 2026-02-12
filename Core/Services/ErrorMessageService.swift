@@ -69,11 +69,11 @@ enum ErrorMessageService {
             case .invalidJSONObject:
                 return "AI 返回内容不是有效 JSON，请重试。"
             case .topLevelKeysMismatch:
-                return "AI 返回字段与模板不一致，请重试。"
+                return "AI 返回字段缺失，请重试。"
             case .morphologyKeysMismatch:
                 return "AI 返回词根/前缀/后缀字段不完整，请重试。"
             case .invalidStringArray:
-                return "AI 返回的列表字段为空或格式错误，请重试。"
+                return "AI 返回的列表字段格式错误，请重试。"
             case .emptyWord:
                 return "AI 返回的单词为空，请重试。"
             }
@@ -83,8 +83,8 @@ enum ErrorMessageService {
             switch e {
             case .invalidAssistantJSON, .schemaValidationFailed:
                 return "AI 返回格式不符合要求，请重试。"
-            case .failedAfterRetryLimit:
-                return "AI 输出多次不合规，已达到重试上限，请稍后重试。"
+            case .failedAfterRetryLimit(let lastErrorDescription):
+                return "AI 输出多次不合规（最后错误：\(lastErrorDescription)）。"
             }
         }
 

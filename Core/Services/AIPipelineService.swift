@@ -3,11 +3,13 @@
 enum AIPipelineError: Error {
     case invalidAssistantJSON
     case schemaValidationFailed
-    case failedAfterRetryLimit
+    case failedAfterRetryLimit(lastErrorDescription: String)
 }
 
 enum AIPipelineService {
     static func generateEntry(for word: String, config: AIServiceConfig) async throws -> WordEntry {
+        var lastErrorDescription = "unknown"
+
         for attempt in 1...3 {
             do {
                 // 第3次尝试 = 第二次重试，使用更严格提示词
@@ -30,13 +32,16 @@ enum AIPipelineService {
 
                 return entry
             } catch {
+                lastErrorDescription = String(describing: error)
+                print("[AIPipelineService] attempt \(attempt) failed:", error)
+
                 if attempt == 3 {
-                    throw AIPipelineError.failedAfterRetryLimit
+                    throw AIPipelineError.failedAfterRetryLimit(lastErrorDescription: lastErrorDescription)
                 }
             }
         }
 
-        throw AIPipelineError.failedAfterRetryLimit
+        throw AIPipelineError.failedAfterRetryLimit(lastErrorDescription: lastErrorDescription)
     }
 
     private static func normalize(_ text: String) -> String {
