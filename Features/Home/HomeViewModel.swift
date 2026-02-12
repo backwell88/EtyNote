@@ -22,6 +22,7 @@ final class HomeViewModel: ObservableObject {
             let ok = try await EntrySaveService.generateAndSave(word: word, in: documentsURL)
             statusMessage = ok ? "保存成功。" : "保存失败：数据校验未通过。"
         } catch {
+            print("[HomeViewModel] generateAndSave error:", error)
             statusMessage = ErrorMessageService.message(for: error)
         }
     }
