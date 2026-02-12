@@ -16,6 +16,9 @@ enum AIServiceError: Error {
     case emptyAPIKey
     case invalidBaseURL
     case invalidJSONBody
+    case invalidHTTPResponse
+    case httpStatus(Int)
+    case emptyAssistantContent
 }
 
 enum AIService {
@@ -51,5 +54,43 @@ enum AIService {
         request.addValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
+    }
+
+    static func generateRawJSON(
+        for word: String,
+        config: AIServiceConfig,
+        useRetryPrompt: Bool = false
+    ) async throws -> String {
+        let request = try makeRequest(word: word, config: config, useRetryPrompt: useRetryPrompt)
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw AIServiceError.invalidHTTPResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw AIServiceError.httpStatus(http.statusCode)
+        }
+
+        let decoded = try JSONDecoder().decode(ChatCompletionsResponse.self, from: data)
+        let content = decoded.choices.first?.message.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard let content, !content.isEmpty else {
+            throw AIServiceError.emptyAssistantContent
+        }
+
+        return content
+    }
+
+    private struct ChatCompletionsResponse: Decodable {
+        let choices: [Choice]
+
+        struct Choice: Decodable {
+            let message: Message
+        }
+
+        struct Message: Decodable {
+            let content: String
+        }
     }
 }
