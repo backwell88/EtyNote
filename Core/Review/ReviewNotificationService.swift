@@ -1,5 +1,5 @@
-﻿import Foundation
-import UserNotifications
+import Foundation
+@preconcurrency import UserNotifications
 
 enum ReviewNotificationService {
     static let identifier = "etynote.daily.review"
@@ -32,12 +32,12 @@ enum ReviewNotificationService {
         _ request: UNNotificationRequest,
         center: UNUserNotificationCenter
     ) async throws {
-        try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             center.add(request) { error in
                 if let error {
                     continuation.resume(throwing: error)
                 } else {
-                    continuation.resume(returning: ())
+                    continuation.resume()
                 }
             }
         }
