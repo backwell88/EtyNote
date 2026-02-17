@@ -1,0 +1,51 @@
+spec_id: settings_markdown_transfer_v3
+version: 1.0.0
+
+goal:
+  - support_data_restore_after_reinstall
+  - keep_existing_local_data_safe
+
+scope:
+  page: SettingsView
+  actions:
+    - export_to_files
+    - import_from_files
+
+import:
+  mode: append_only
+  never_delete_existing: true
+  backup_required: false
+  file_picker:
+    allow_multiple_selection: false
+    allowed_extension:
+      - md
+  duplicate_policy:
+    by_title_case_insensitive: true
+    action: skip
+  strict_validation:
+    all_or_nothing: true
+    manual_edited_file_allowed: false
+
+schema:
+  entry_delimiter: "---"
+  required_sections_in_order:
+    - "# <word>"
+    - "## Part of Speech"
+    - "## English Meaning"
+    - "## Chinese Meaning"
+    - "## Root"
+    - "## Prefix"
+    - "## Suffix"
+    - "## Related Words"
+    - "## Variants"
+  list_item_prefix: "- "
+  morphology_required_lines:
+    - "- Form:"
+    - "- Meaning:"
+    - "- Origin:"
+
+errors:
+  invalid_format_message: "Invalid file format: only EtyNote exported files are supported."
+
+success_message:
+  template: "Import completed: added {imported}, skipped duplicates {skipped}."
