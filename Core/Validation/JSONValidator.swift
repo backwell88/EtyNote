@@ -9,50 +9,31 @@ enum JSONValidatorError: Error {
 }
 
 enum JSONValidator {
-    private static let topLevelKeys: Set<String> = [
-        "word",
-        "partOfSpeech",
-        "englishMeaning",
-        "chineseMeaning",
-        "root",
-        "prefix",
-        "suffix",
-        "relatedWords",
-        "variants"
-    ]
-
-    private static let morphologyKeys: Set<String> = [
-        "form",
-        "meaning",
-        "originLanguage"
-    ]
-
     static func decodeStrict(from data: Data) throws -> WordEntry {
         let object = try JSONSerialization.jsonObject(with: data)
         guard let dict = object as? [String: Any] else {
             throw JSONValidatorError.invalidJSONObject
         }
 
-        // Pragmatic strictness: require all mandatory keys, but ignore extra keys from model output.
         let actualTopKeys = Set(dict.keys)
-        guard topLevelKeys.isSubset(of: actualTopKeys) else {
+        guard actualTopKeys.contains("word") else {
             throw JSONValidatorError.topLevelKeysMismatch(
-                expected: Array(topLevelKeys).sorted(),
+                expected: ["word"],
                 actual: Array(actualTopKeys).sorted()
             )
         }
 
         var normalized: [String: Any] = [:]
-        normalized["word"] = stringValue(dict["word"])
-        normalized["partOfSpeech"] = try normalizeStringArrayField("partOfSpeech", in: dict)
-        normalized["englishMeaning"] = try normalizeStringArrayField("englishMeaning", in: dict)
-        normalized["chineseMeaning"] = try normalizeStringArrayField("chineseMeaning", in: dict)
-        normalized["relatedWords"] = try normalizeStringArrayField("relatedWords", in: dict)
-        normalized["variants"] = try normalizeStringArrayField("variants", in: dict)
+        normalized["word"] = stringValue(dict["word"]).trimmingCharacters(in: .whitespacesAndNewlines)
+        normalized["partOfSpeech"] = normalizeStringArrayField("partOfSpeech", in: dict)
+        normalized["englishMeaning"] = normalizeStringArrayField("englishMeaning", in: dict)
+        normalized["chineseMeaning"] = normalizeStringArrayField("chineseMeaning", in: dict)
+        normalized["relatedWords"] = normalizeStringArrayField("relatedWords", in: dict)
+        normalized["variants"] = normalizeStringArrayField("variants", in: dict)
 
-        normalized["root"] = try normalizeMorphologyField("root", in: dict)
-        normalized["prefix"] = try normalizeMorphologyField("prefix", in: dict)
-        normalized["suffix"] = try normalizeMorphologyField("suffix", in: dict)
+        normalized["root"] = normalizeMorphologyField("root", in: dict)
+        normalized["prefix"] = normalizeMorphologyField("prefix", in: dict)
+        normalized["suffix"] = normalizeMorphologyField("suffix", in: dict)
 
         let normalizedData = try JSONSerialization.data(withJSONObject: normalized)
         let entry = try JSONDecoder().decode(WordEntry.self, from: normalizedData)
@@ -73,42 +54,65 @@ enum JSONValidator {
     }
 
     private static func hasAtLeastOneItem(_ values: [String]) -> Bool {
-        !values.isEmpty
+        values.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     }
 
     private static func normalizeStringArrayField(
         _ field: String,
         in dict: [String: Any]
-    ) throws -> [String] {
-        if let values = dict[field] as? [String], !values.isEmpty {
-            return values
+    ) -> [String] {
+        if let values = dict[field] as? [Any] {
+            let normalized = values
+                .map { stringValue($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            if !normalized.isEmpty {
+                return normalized
+            }
         }
 
-        if let value = dict[field] as? String {
-            return [value]
+        if let value = dict[field] {
+            let normalized = stringValue(value).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !normalized.isEmpty {
+                return [normalized]
+            }
         }
 
-        throw JSONValidatorError.invalidStringArray(field: field)
+        return ["N/A"]
     }
 
     private static func normalizeMorphologyField(
         _ field: String,
         in dict: [String: Any]
-    ) throws -> [String: String] {
-        guard let sub = dict[field] as? [String: Any] else {
-            throw JSONValidatorError.morphologyKeysMismatch(field: field)
+    ) -> [String: String] {
+        if let sub = dict[field] as? [String: Any] {
+            return [
+                "form": nonEmptyOrNA(sub["form"]),
+                "meaning": nonEmptyOrNA(sub["meaning"]),
+                "originLanguage": nonEmptyOrNA(sub["originLanguage"])
+            ]
         }
 
-        let keys = Set(sub.keys)
-        guard morphologyKeys.isSubset(of: keys) else {
-            throw JSONValidatorError.morphologyKeysMismatch(field: field)
+        if let value = dict[field] {
+            let normalized = stringValue(value).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !normalized.isEmpty {
+                return [
+                    "form": normalized,
+                    "meaning": "N/A",
+                    "originLanguage": "N/A"
+                ]
+            }
         }
 
         return [
-            "form": stringValue(sub["form"]),
-            "meaning": stringValue(sub["meaning"]),
-            "originLanguage": stringValue(sub["originLanguage"])
+            "form": "N/A",
+            "meaning": "N/A",
+            "originLanguage": "N/A"
         ]
+    }
+
+    private static func nonEmptyOrNA(_ value: Any?) -> String {
+        let normalized = stringValue(value).trimmingCharacters(in: .whitespacesAndNewlines)
+        return normalized.isEmpty ? "N/A" : normalized
     }
 
     private static func stringValue(_ value: Any?) -> String {

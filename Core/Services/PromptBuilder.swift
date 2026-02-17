@@ -13,6 +13,13 @@ Do not add fields.
         """
 Analyze the word: \(word)
 
+Rules:
+- Return JSON only.
+- Keep all keys exactly as schema.
+- Every list field must contain at least 1 string item.
+- If unknown, use \"N/A\" instead of empty string, null, or missing field.
+- root/prefix/suffix must always be objects with form/meaning/originLanguage.
+
 Return strictly in this JSON format:
 
 {
@@ -42,6 +49,14 @@ Return strictly in this JSON format:
     }
 
     static func retryUserPrompt(for word: String) -> String {
-        "Previous JSON invalid. Follow schema strictly.\n\n" + userPrompt(for: word)
+        """
+Previous JSON invalid.
+Fix and return valid JSON only.
+Do not output null.
+Do not output empty arrays.
+Do not omit fields.
+
+\(userPrompt(for: word))
+"""
     }
 }

@@ -12,8 +12,8 @@ enum AIPipelineService {
 
         for attempt in 1...3 {
             do {
-                // 第3次尝试 = 第二次重试，使用更严格提示词
-                let useRetryPrompt = (attempt == 3)
+                // 第2/3次尝试均启用更严格提示词，提高不合规输出修复概率
+                let useRetryPrompt = (attempt >= 2)
                 let raw = try await AIService.generateRawJSON(
                     for: word,
                     config: config,
@@ -46,17 +46,33 @@ enum AIPipelineService {
 
     private static func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let deFenced = stripCodeFenceIfNeeded(trimmed)
+        if let object = extractJSONObject(from: deFenced) {
+            return object
+        }
+        return deFenced
+    }
 
-        // 兼容 AI 偶尔返回 ```json ... ``` 的情况
-        guard trimmed.hasPrefix("```") else { return trimmed }
+    private static func stripCodeFenceIfNeeded(_ text: String) -> String {
+        guard text.hasPrefix("```") else { return text }
 
-        let lines = trimmed.split(whereSeparator: \.isNewline).map(String.init)
-        guard lines.count >= 3 else { return trimmed }
+        let lines = text.split(whereSeparator: \.isNewline).map(String.init)
+        guard lines.count >= 3 else { return text }
 
         return lines
             .dropFirst()
             .dropLast()
             .joined(separator: "\n")
             .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func extractJSONObject(from text: String) -> String? {
+        guard let firstBrace = text.firstIndex(of: "{"),
+              let lastBrace = text.lastIndex(of: "}"),
+              firstBrace <= lastBrace else {
+            return nil
+        }
+
+        return String(text[firstBrace...lastBrace])
     }
 }
