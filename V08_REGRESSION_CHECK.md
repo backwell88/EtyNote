@@ -12,6 +12,9 @@
 
 ## Detail
 - [ ] Verify generated markdown content is visible
+- [ ] Verify supported markdown markers (`#`, `##`, `###`, `-`, `---`) are rendered without raw symbols
+- [ ] Verify H1/H2/H3/body typography hierarchy is obvious
+- [ ] Verify heading highlight uses soft background colors and stays stable for same heading text
 - [ ] Tap `Copy` and verify content can be pasted elsewhere
 
 ## Settings Markdown Transfer
