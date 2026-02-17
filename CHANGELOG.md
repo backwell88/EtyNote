@@ -1,4 +1,12 @@
-﻿# Changelog
+# Changelog
+
+## v0.8.0-usability-polish - 2026-02-17
+- Improved Home adaptive layout on iPhone with width-based padding and top-first content flow
+- Moved Home title into content area so title/input move consistently during keyboard interactions
+- Added immediate navigation to Detail after successful generate-and-save
+- Added clipboard support: paste on Home and copy markdown in Detail
+- Implemented real markdown transfer via Files picker (`fileExporter` / `fileImporter`)
+- Added app icon asset catalog from user-designed `icon.png`
 
 ## v0.2.0-local-core - 2026-02-12
 - Added core models: Morphology, WordEntry
