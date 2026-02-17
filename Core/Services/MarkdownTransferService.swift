@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 enum MarkdownTransferService {
     static func exportMarkdown(in documentsURL: URL) throws -> String {
@@ -15,5 +15,10 @@ enum MarkdownTransferService {
         }
 
         try markdown.write(to: fileURL, atomically: true, encoding: .utf8)
+    }
+
+    static func importMarkdownReplace(from sourceURL: URL, in documentsURL: URL) throws {
+        let markdown = try String(contentsOf: sourceURL, encoding: .utf8)
+        try importMarkdownReplace(markdown, in: documentsURL)
     }
 }

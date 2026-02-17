@@ -32,6 +32,13 @@ enum ErrorMessageService {
             }
         }
 
+        if let e = error as? EntrySaveServiceError {
+            switch e {
+            case .invalidEntryData:
+                return "保存失败：数据校验未通过。"
+            }
+        }
+
         if let e = error as? URLError {
             switch e.code {
             case .timedOut:

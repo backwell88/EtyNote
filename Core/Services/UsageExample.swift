@@ -1,17 +1,17 @@
-﻿import Foundation
+import Foundation
 
 enum UsageExample {
     static func documentsDirectoryURL() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
-    static func runGenerateAndSave(word: String) async -> Result<Bool, Error> {
+    static func runGenerateAndSave(word: String) async -> Result<String, Error> {
         do {
-            let success = try await EntrySaveService.generateAndSave(
+            let title = try await EntrySaveService.generateAndSave(
                 word: word,
                 in: documentsDirectoryURL()
             )
-            return .success(success)
+            return .success(title)
         } catch {
             return .failure(error)
         }
@@ -21,8 +21,8 @@ enum UsageExample {
         let result = await runGenerateAndSave(word: word)
 
         switch result {
-        case .success(let ok):
-            return ok ? "保存成功。" : "保存失败：数据校验未通过。"
+        case .success(let title):
+            return "Saved successfully: \(title)"
         case .failure(let error):
             return ErrorMessageService.message(for: error)
         }

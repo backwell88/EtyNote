@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 import Combine
 
 @MainActor
@@ -31,27 +31,32 @@ final class SettingsViewModel: ObservableObject {
             ReviewSettingsService.setDailyCount(max(1, parsed), defaults: defaults)
             try await ReviewSettingsService.updateReviewEnabled(reviewEnabled, defaults: defaults)
 
-            statusMessage = "设置已保存。"
+            statusMessage = "Settings saved."
         } catch {
             statusMessage = ErrorMessageService.message(for: error)
         }
     }
 
-    func exportMarkdown() {
+    func prepareExportDocument() throws -> MarkdownTextDocument {
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let markdown = try MarkdownTransferService.exportMarkdown(in: documentsURL)
+        markdownTransferText = markdown
+        return MarkdownTextDocument(text: markdown)
+    }
+
+    func importMarkdownReplace(from fileURL: URL) {
         do {
+            let granted = fileURL.startAccessingSecurityScopedResource()
+            defer {
+                if granted {
+                    fileURL.stopAccessingSecurityScopedResource()
+                }
+            }
+
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            try MarkdownTransferService.importMarkdownReplace(from: fileURL, in: documentsURL)
             markdownTransferText = try MarkdownTransferService.exportMarkdown(in: documentsURL)
-            statusMessage = markdownTransferText.isEmpty ? "当前没有可导出的内容。" : "导出成功（内容已加载到下方文本框）。"
-        } catch {
-            statusMessage = ErrorMessageService.message(for: error)
-        }
-    }
-
-    func importMarkdownReplace() {
-        do {
-            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            try MarkdownTransferService.importMarkdownReplace(markdownTransferText, in: documentsURL)
-            statusMessage = "导入成功（已替换本地Markdown文件）。"
+            statusMessage = "Import completed and local markdown was replaced."
         } catch {
             statusMessage = ErrorMessageService.message(for: error)
         }

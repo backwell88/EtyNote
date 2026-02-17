@@ -1,4 +1,5 @@
-﻿import SwiftUI
+import SwiftUI
+import UIKit
 
 struct DetailView: View {
     let title: String
@@ -10,18 +11,32 @@ struct DetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 if content.isEmpty {
-                    Text(statusMessage.isEmpty ? "暂无内容。" : statusMessage)
+                    Text(statusMessage.isEmpty ? "No content." : statusMessage)
                         .foregroundColor(.secondary)
                 } else {
                     Text(content)
                         .font(.system(.body, design: .monospaced))
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if !statusMessage.isEmpty {
+                        Text(statusMessage)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .padding()
         }
         .navigationTitle(title)
+        .toolbar {
+            if !content.isEmpty {
+                Button("Copy") {
+                    UIPasteboard.general.string = content
+                    statusMessage = "Markdown copied."
+                }
+            }
+        }
         .onAppear(perform: load)
     }
 
@@ -30,7 +45,9 @@ struct DetailView: View {
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             content = try EntryDetailService.loadEntryMarkdown(word: title, in: documentsURL) ?? ""
             if content.isEmpty {
-                statusMessage = "未找到该词条内容。"
+                statusMessage = "Entry was not found."
+            } else {
+                statusMessage = ""
             }
         } catch {
             statusMessage = ErrorMessageService.message(for: error)
