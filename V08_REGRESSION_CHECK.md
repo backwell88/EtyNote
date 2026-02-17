@@ -19,6 +19,7 @@
 
 ## Settings Markdown Transfer
 - [ ] Tap `Export to Files` and verify file is created in selected location
+- [ ] Verify `Export to Files` and `Import from Files` are independent buttons (not chained)
 - [ ] Tap `Import from Files`, select a valid exported markdown file, and verify entries are appended
 - [ ] Import the same file twice and verify duplicate titles are skipped
 - [ ] Select a non-export-format markdown and verify error message is shown
@@ -27,3 +28,4 @@
 - [ ] Search still loads titles and can open Detail
 - [ ] Review still loads and can open Detail
 - [ ] Delete flow in Search still works
+- [ ] In Detail, verify partial text can be selected and copied via `Select Text`

@@ -8,4 +8,6 @@
 - [x] T5.1: Add app icon asset catalog from user-provided icon
 - [x] T5.2: Add structured markdown reader in Detail with heading highlights
 - [x] T5.3: Add strict append-only markdown import with duplicate skip
+- [x] T5.4: Split export/import into independent UI actions
+- [x] T5.5: Add partial text selection flow in Detail page
 - [ ] T6: Regression checklist, changelog, tag, push

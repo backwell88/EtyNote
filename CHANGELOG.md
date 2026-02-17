@@ -9,6 +9,8 @@
 - Added app icon asset catalog from user-designed `icon.png`
 - Upgraded Detail reader to structured markdown rendering (`#`, `##`, `###`, `-`, `---`) with stable soft heading highlights
 - Refined markdown import to strict append-only mode with duplicate-title skipping and format validation for exported files only
+- Split markdown export/import into independent actions to avoid chained picker behavior
+- Added `Select Text` flow in Detail for partial text selection and copy
 
 ## v0.2.0-local-core - 2026-02-12
 - Added core models: Morphology, WordEntry

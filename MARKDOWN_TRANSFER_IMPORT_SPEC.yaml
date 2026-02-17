@@ -10,6 +10,9 @@ scope:
   actions:
     - export_to_files
     - import_from_files
+  ui_rule:
+    - export_and_import_are_independent_buttons
+    - no_chained_picker_behavior
 
 import:
   mode: append_only
