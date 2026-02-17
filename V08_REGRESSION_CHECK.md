@@ -29,3 +29,4 @@
 - [ ] Review still loads and can open Detail
 - [ ] Delete flow in Search still works
 - [ ] In Detail, verify partial text can be selected and copied via `Select Text`
+- [ ] Verify app icon is visible on simulator home screen after install

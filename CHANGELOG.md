@@ -11,6 +11,7 @@
 - Refined markdown import to strict append-only mode with duplicate-title skipping and format validation for exported files only
 - Split markdown export/import into independent actions to avoid chained picker behavior
 - Added `Select Text` flow in Detail for partial text selection and copy
+- Fixed Xcode project resource phase so `AppIcon` asset catalog is bundled correctly
 
 ## v0.2.0-local-core - 2026-02-12
 - Added core models: Morphology, WordEntry

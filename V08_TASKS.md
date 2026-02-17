@@ -10,4 +10,5 @@
 - [x] T5.3: Add strict append-only markdown import with duplicate skip
 - [x] T5.4: Split export/import into independent UI actions
 - [x] T5.5: Add partial text selection flow in Detail page
+- [x] T5.6: Ensure AppIcon asset catalog is included in Xcode resources phase
 - [ ] T6: Regression checklist, changelog, tag, push

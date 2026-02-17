@@ -10,6 +10,8 @@ targets:
       - App
       - Core
       - Features
+    resources:
+      - App/Assets.xcassets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.backwell88.EtyNote
