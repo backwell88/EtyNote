@@ -56,7 +56,7 @@ struct SettingsView: View {
             .fileExporter(
                 isPresented: $isExporterPresented,
                 document: exportDocument,
-                contentType: .markdown,
+                contentType: markdownContentType,
                 defaultFilename: exportFilename
             ) { result in
                 switch result {
@@ -68,7 +68,7 @@ struct SettingsView: View {
             }
             .fileImporter(
                 isPresented: $isImporterPresented,
-                allowedContentTypes: [.markdown, .plainText],
+                allowedContentTypes: [markdownContentType, .plainText],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
@@ -87,6 +87,10 @@ struct SettingsView: View {
 
     private var exportFilename: String {
         "EtyNote-\(dateStamp())"
+    }
+
+    private var markdownContentType: UTType {
+        UTType(filenameExtension: "md") ?? .plainText
     }
 
     private func startExport() {
@@ -109,7 +113,10 @@ struct SettingsView: View {
 }
 
 struct MarkdownTextDocument: FileDocument {
-    static var readableContentTypes: [UTType] = [.markdown, .plainText]
+    static var readableContentTypes: [UTType] = [
+        UTType(filenameExtension: "md") ?? .plainText,
+        .plainText
+    ]
 
     var text: String
 
