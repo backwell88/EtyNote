@@ -14,6 +14,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.backwell88.EtyNote
         GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: 5.9
         CODE_SIGNING_ALLOWED: YES
 
