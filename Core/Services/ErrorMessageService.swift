@@ -39,6 +39,13 @@ enum ErrorMessageService {
             }
         }
 
+        if let e = error as? MarkdownTransferServiceError {
+            switch e {
+            case .unsupportedFileExtension, .invalidImportFormat:
+                return "文件格式错误：仅支持 EtyNote 导出文件。"
+            }
+        }
+
         if let e = error as? URLError {
             switch e.code {
             case .timedOut:

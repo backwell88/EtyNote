@@ -25,14 +25,12 @@ struct SettingsView: View {
                 }
 
                 Section("Markdown Transfer") {
-                    HStack {
-                        Button("Export to Files") {
-                            startExport()
-                        }
+                    Button("Export to Files") {
+                        startExport()
+                    }
 
-                        Button("Import Replace") {
-                            isImporterPresented = true
-                        }
+                    Button("Import from Files") {
+                        isImporterPresented = true
                     }
 
                     TextEditor(text: $vm.markdownTransferText)
@@ -68,7 +66,7 @@ struct SettingsView: View {
             }
             .fileImporter(
                 isPresented: $isImporterPresented,
-                allowedContentTypes: [markdownContentType, .plainText],
+                allowedContentTypes: [markdownContentType],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
@@ -77,7 +75,7 @@ struct SettingsView: View {
                         vm.statusMessage = "No file selected."
                         return
                     }
-                    vm.importMarkdownReplace(from: fileURL)
+                    vm.importMarkdownAppend(from: fileURL)
                 case .failure(let error):
                     vm.statusMessage = "Import failed: \(error.localizedDescription)"
                 }

@@ -44,7 +44,7 @@ final class SettingsViewModel: ObservableObject {
         return MarkdownTextDocument(text: markdown)
     }
 
-    func importMarkdownReplace(from fileURL: URL) {
+    func importMarkdownAppend(from fileURL: URL) {
         do {
             let granted = fileURL.startAccessingSecurityScopedResource()
             defer {
@@ -54,9 +54,14 @@ final class SettingsViewModel: ObservableObject {
             }
 
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            try MarkdownTransferService.importMarkdownReplace(from: fileURL, in: documentsURL)
+            let result = try MarkdownTransferService.importMarkdownAppendStrict(from: fileURL, in: documentsURL)
             markdownTransferText = try MarkdownTransferService.exportMarkdown(in: documentsURL)
-            statusMessage = "Import completed and local markdown was replaced."
+
+            if result.importedCount == 0 {
+                statusMessage = "Import completed: no new entries (duplicates were skipped)."
+            } else {
+                statusMessage = "Import completed: added \(result.importedCount), skipped duplicates \(result.skippedDuplicateCount)."
+            }
         } catch {
             statusMessage = ErrorMessageService.message(for: error)
         }
