@@ -72,7 +72,7 @@ struct SettingsView: View {
             }
             .fileImporter(
                 isPresented: $isImporterPresented,
-                allowedContentTypes: [markdownContentType],
+                allowedContentTypes: importContentTypes,
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
@@ -92,11 +92,18 @@ struct SettingsView: View {
     }
 
     private var exportFilename: String {
-        "EtyNote-\(dateStamp())"
+        "EtyNote-\(dateStamp()).md"
     }
 
     private var markdownContentType: UTType {
         UTType(filenameExtension: "md") ?? .plainText
+    }
+
+    private var importContentTypes: [UTType] {
+        if markdownContentType == .plainText {
+            return [.plainText]
+        }
+        return [markdownContentType, .plainText]
     }
 
     private func startExport() {

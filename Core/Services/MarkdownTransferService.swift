@@ -1,7 +1,6 @@
 import Foundation
 
 enum MarkdownTransferServiceError: Error {
-    case unsupportedFileExtension
     case invalidImportFormat
 }
 
@@ -36,8 +35,9 @@ enum MarkdownTransferService {
         from sourceURL: URL,
         in documentsURL: URL
     ) throws -> MarkdownImportResult {
-        guard sourceURL.pathExtension.lowercased() == "md" else {
-            throw MarkdownTransferServiceError.unsupportedFileExtension
+        let ext = sourceURL.pathExtension.lowercased()
+        if !ext.isEmpty && ext != "md" && ext != "txt" {
+            throw MarkdownTransferServiceError.invalidImportFormat
         }
 
         let importedMarkdown = try String(contentsOf: sourceURL, encoding: .utf8)
@@ -201,10 +201,6 @@ enum MarkdownTransferService {
                     guard line.hasPrefix("- ") else {
                         throw MarkdownTransferServiceError.invalidImportFormat
                     }
-                    let value = String(line.dropFirst(2)).trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !value.isEmpty else {
-                        throw MarkdownTransferServiceError.invalidImportFormat
-                    }
                     itemCount += 1
                 }
 
@@ -216,11 +212,6 @@ enum MarkdownTransferService {
                 let requiredPrefixes = ["- Form:", "- Meaning:", "- Origin:"]
                 for prefix in requiredPrefixes {
                     guard let line = nextNonEmptyTrimmedLine(), line.hasPrefix(prefix) else {
-                        throw MarkdownTransferServiceError.invalidImportFormat
-                    }
-
-                    let value = String(line.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !value.isEmpty else {
                         throw MarkdownTransferServiceError.invalidImportFormat
                     }
                 }
