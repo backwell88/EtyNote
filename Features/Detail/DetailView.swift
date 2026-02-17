@@ -7,6 +7,8 @@ struct DetailView: View {
     @State private var rawMarkdown: String = ""
     @State private var blocks: [DetailMarkdownBlock] = []
     @State private var statusMessage: String = ""
+    @State private var isSelectionSheetPresented: Bool = false
+    @State private var selectionText: String = ""
 
     private let highlightPalette: [Color] = [
         Color(hex: "FFE8A3"),
@@ -42,10 +44,32 @@ struct DetailView: View {
         .navigationTitle(title)
         .toolbar {
             if !rawMarkdown.isEmpty {
+                Button("Select Text") {
+                    openSelectionSheet()
+                }
+
                 Button("Copy") {
                     UIPasteboard.general.string = rawMarkdown
                     statusMessage = "Markdown copied."
                 }
+            }
+        }
+        .sheet(isPresented: $isSelectionSheetPresented) {
+            NavigationStack {
+                TextEditor(text: $selectionText)
+                    .font(.system(size: 17))
+                    .padding(8)
+                    .navigationTitle("Selectable Text")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") {
+                                isSelectionSheetPresented = false
+                            }
+                        }
+                    }
             }
         }
         .onAppear(perform: load)
@@ -64,6 +88,7 @@ struct DetailView: View {
             Text(text)
                 .font(.system(size: 17, weight: .regular))
                 .lineSpacing(6)
+                .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
         case .listItem(let text):
             HStack(alignment: .top, spacing: 6) {
@@ -73,6 +98,7 @@ struct DetailView: View {
                 Text(text)
                     .font(.system(size: 17, weight: .regular))
                     .lineSpacing(6)
+                    .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -97,6 +123,7 @@ struct DetailView: View {
             .padding(.vertical, 3)
             .background(highlightColor(for: text).opacity(0.28))
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.bottom, bottomSpacing)
     }
@@ -133,6 +160,33 @@ struct DetailView: View {
         } catch {
             statusMessage = ErrorMessageService.message(for: error)
         }
+    }
+
+    private func openSelectionSheet() {
+        selectionText = selectionContent()
+        isSelectionSheetPresented = true
+    }
+
+    private func selectionContent() -> String {
+        var lines: [String] = []
+
+        for block in blocks {
+            switch block {
+            case .h1(let text), .h2(let text), .h3(let text):
+                lines.append(text)
+            case .body(let text):
+                lines.append(text)
+            case .listItem(let text):
+                lines.append("- \(text)")
+            case .horizontalRule:
+                lines.append("")
+            case .spacer:
+                lines.append("")
+            }
+        }
+
+        return lines.joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

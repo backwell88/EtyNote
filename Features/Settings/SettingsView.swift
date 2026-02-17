@@ -24,15 +24,19 @@ struct SettingsView: View {
                         .keyboardType(.numberPad)
                 }
 
-                Section("Markdown Transfer") {
+                Section("Markdown Export") {
                     Button("Export to Files") {
                         startExport()
                     }
+                }
 
+                Section("Markdown Import") {
                     Button("Import from Files") {
-                        isImporterPresented = true
+                        startImport()
                     }
+                }
 
+                Section("Markdown Preview") {
                     TextEditor(text: $vm.markdownTransferText)
                         .frame(minHeight: 180)
                 }
@@ -61,7 +65,9 @@ struct SettingsView: View {
                 case .success:
                     vm.statusMessage = "Export completed. Check the Files app."
                 case .failure(let error):
-                    vm.statusMessage = "Export failed: \(error.localizedDescription)"
+                    if !isUserCancellation(error) {
+                        vm.statusMessage = "Export failed: \(error.localizedDescription)"
+                    }
                 }
             }
             .fileImporter(
@@ -77,7 +83,9 @@ struct SettingsView: View {
                     }
                     vm.importMarkdownAppend(from: fileURL)
                 case .failure(let error):
-                    vm.statusMessage = "Import failed: \(error.localizedDescription)"
+                    if !isUserCancellation(error) {
+                        vm.statusMessage = "Import failed: \(error.localizedDescription)"
+                    }
                 }
             }
         }
@@ -94,6 +102,7 @@ struct SettingsView: View {
     private func startExport() {
         do {
             exportDocument = try vm.prepareExportDocument()
+            isImporterPresented = false
             isExporterPresented = true
             if exportDocument.text.isEmpty {
                 vm.statusMessage = "No entries found. An empty markdown file will be exported."
@@ -103,10 +112,20 @@ struct SettingsView: View {
         }
     }
 
+    private func startImport() {
+        isExporterPresented = false
+        isImporterPresented = true
+    }
+
     private func dateStamp() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd-HHmm"
         return formatter.string(from: Date())
+    }
+
+    private func isUserCancellation(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == NSCocoaErrorDomain && nsError.code == NSUserCancelledError
     }
 }
 
