@@ -19,7 +19,9 @@
 
 ## Settings Markdown Transfer
 - [ ] Tap `Export to Files` and verify file is created in selected location
-- [ ] Tap `Import Replace`, select a markdown file, and verify local entries are replaced
+- [ ] Tap `Import from Files`, select a valid exported markdown file, and verify entries are appended
+- [ ] Import the same file twice and verify duplicate titles are skipped
+- [ ] Select a non-export-format markdown and verify error message is shown
 
 ## Existing Core Flow
 - [ ] Search still loads titles and can open Detail

@@ -8,6 +8,7 @@
 - Implemented real markdown transfer via Files picker (`fileExporter` / `fileImporter`)
 - Added app icon asset catalog from user-designed `icon.png`
 - Upgraded Detail reader to structured markdown rendering (`#`, `##`, `###`, `-`, `---`) with stable soft heading highlights
+- Refined markdown import to strict append-only mode with duplicate-title skipping and format validation for exported files only
 
 ## v0.2.0-local-core - 2026-02-12
 - Added core models: Morphology, WordEntry

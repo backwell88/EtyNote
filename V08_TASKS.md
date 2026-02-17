@@ -7,4 +7,5 @@
 - [x] T5: Add paste support in input and copy support in markdown detail
 - [x] T5.1: Add app icon asset catalog from user-provided icon
 - [x] T5.2: Add structured markdown reader in Detail with heading highlights
+- [x] T5.3: Add strict append-only markdown import with duplicate skip
 - [ ] T6: Regression checklist, changelog, tag, push
