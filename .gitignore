@@ -10,3 +10,6 @@ build/
 
 # local build output
 build.log
+
+# local ipa artifact
+*.ipa
