@@ -1,0 +1,76 @@
+spec_id: detail_markdown_reader_v1
+version: 1.0.0
+scope:
+  page: DetailView
+  only_this_page: true
+
+goal:
+  - hide_markdown_symbols
+  - clear_typography_hierarchy
+  - soft_highlight_for_headings
+
+input:
+  type: markdown_string
+
+parser:
+  mode: line_based
+  supported_syntax:
+    h1: "# "
+    h2: "## "
+    h3: "### "
+    list_item: "- "
+    horizontal_rule: "---"
+  unsupported_syntax_policy: treat_as_body_text
+
+render:
+  show_raw_markdown_symbols: false
+  typography:
+    h1:
+      font_size: 30
+      font_weight: bold
+      line_spacing_after: 10
+    h2:
+      font_size: 24
+      font_weight: semibold
+      line_spacing_after: 8
+    h3:
+      font_size: 20
+      font_weight: semibold
+      line_spacing_after: 6
+    body:
+      font_size: 17
+      font_weight: regular
+      line_spacing: 6
+    list_item:
+      font_size: 17
+      bullet: "•"
+    horizontal_rule:
+      style: divider
+      top_spacing: 10
+      bottom_spacing: 10
+
+highlight:
+  style: soft_background
+  apply_to:
+    - h1
+    - h2
+    - h3
+  stable_color_by_heading_text: true
+  color_pick_strategy: hash(heading_text) % palette_size
+  palette:
+    - "#FFE8A3"
+    - "#FFD9CC"
+    - "#D9F0C2"
+    - "#CFEFFF"
+    - "#E3D8FF"
+    - "#FFDDEE"
+  opacity: 0.28
+  corner_radius: 8
+  horizontal_padding: 6
+  vertical_padding: 3
+
+acceptance_criteria:
+  - "No visible raw markers for supported syntax # ## ### - ---"
+  - "H1/H2/H3/body show clear typography hierarchy"
+  - "Same heading text keeps stable highlight color across reopen"
+  - "Only DetailView is changed"
